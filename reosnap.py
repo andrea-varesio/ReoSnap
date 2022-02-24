@@ -44,7 +44,7 @@ def parse_arguments():
     time_group.add_argument('-H', '--hours', help='Hours', type=int)
     time_group.add_argument('-m', '--minutes', help='Minutes', type=int)
     time_group.add_argument('-s', '--seconds', help='Seconds', type=int)
-    arg_parser.add_argument('-i', '--interval', help='Snapshot interval (default=5s)', type=int)
+    arg_parser.add_argument('-i', '--interval', help='Snapshot interval (default=4s)', type=int)
     arg_parser.add_argument('-O', '--output', help='Path to output directory', type=str)
     arg_parser.add_argument('-v', '--verbose', help='Enable verbosity', action='store_true')
     arg_parser.add_argument('-l', '--license', help='Show License', action='store_true')
@@ -75,13 +75,13 @@ def get_file_res():
         print('Invalid resolution')
         sys.exit(1)
 
-    if args.resolution == res_levels[3]:
+    if args.resolution == res_levels[3] or args.resolution == 'M':
         resolution = [2560, 1920]
-    elif args.resolution == res_levels[2]:
+    elif args.resolution == res_levels[2] or args.resolution == 'h':
         resolution = [2048, 1536]
-    elif args.resolution == res_levels[1]:
+    elif args.resolution == res_levels[1] or args.resolution == 'm':
         resolution = [1856, 1392]
-    elif args.resolution == res_levels[0]:
+    elif args.resolution == res_levels[0] or args.resolution == 'l':
         resolution = [1600, 1200]
     elif args.width:
         resolution = [args.width,  args.width * 3 / 4]
@@ -155,16 +155,16 @@ def get_file_quality():
     args = parse_arguments()
     quality_levels = ['low', 'medium', 'high', 'max']
 
-    if args.quality == quality_levels[3]:
+    if args.quality == quality_levels[3] or args.quality == 'M':
         return 100
 
-    if args.quality == quality_levels[2]:
+    if args.quality == quality_levels[2] or args.quality == 'h':
         return 75
 
-    if args.quality == quality_levels[1]:
+    if args.quality == quality_levels[1] or args.quality == 'm':
         return 50
 
-    if args.quality == quality_levels[0]:
+    if args.quality == quality_levels[0] or args.quality == 'l':
         return 25
 
     if args.quality:
@@ -210,21 +210,31 @@ def loop():
     asyncio.run(get_cam1_feed())
     asyncio.run(get_cam2_feed())
 
+def get_interval():
+    '''Get snapshots interval'''
+
+    args = parse_arguments()
+
+    if args.interval:
+        return args.interval
+
+    return 4
+
 def get_rec_period():
     '''Get number of files to keep'''
 
     args = parse_arguments()
 
     if args.hours:
-        return args.hours * 3600 / 5
+        return args.hours * 3600 / get_interval()
 
     if args.minutes:
-        return args.minutes * 60 / 5
+        return args.minutes * 60 / get_interval()
 
     if args.seconds:
-        return args.seconds / 5
+        return args.seconds / get_interval()
 
-    return 12 * 3600 / 5
+    return 12 * 3600 / get_interval()
 
 def main():
     '''Main function'''
@@ -234,11 +244,6 @@ def main():
     if args.license:
         show_license()
         sys.exit(0)
-
-    if args.interval:
-        interval = args.interval
-    else:
-        interval = 5
 
     i = 0
 
@@ -257,7 +262,7 @@ def main():
                 oldest_file = min(os.listdir(os.path.join(date_dir, cam_dir)))
                 os.remove(os.path.join(date_dir, cam_dir, oldest_file))
 
-        time.sleep(interval)
+        time.sleep(get_interval())
 
 if __name__ == '__main__':
     main()
