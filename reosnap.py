@@ -241,6 +241,10 @@ def main():
 
     args = parse_arguments()
 
+    interval = get_interval()
+    rec_period = get_rec_period()
+    output_dir = get_output_dir()
+
     if args.license:
         show_license()
         sys.exit(0)
@@ -255,14 +259,23 @@ def main():
         if args.verbose:
             print(f'Saved snapshot(s): {get_timestamp()} | #{i}')
 
-        if i > get_rec_period():
-            output_dir = get_output_dir()
-            date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
+        date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
+
+        for cam_dir in os.listdir(date_dir):
+            oldest_dir = os.listdir(os.path.join(date_dir, cam_dir))
+            if not oldest_dir:
+                os.rmdir(os.path.join(date_dir, cam_dir))
+
+        if not os.listdir(date_dir):
+            os.rmdir(date_dir)
+
+        if i > rec_period:
             for cam_dir in os.listdir(date_dir):
-                oldest_file = min(os.listdir(os.path.join(date_dir, cam_dir)))
+                oldest_dir = os.listdir(os.path.join(date_dir, cam_dir))
+                oldest_file = min(oldest_dir)
                 os.remove(os.path.join(date_dir, cam_dir, oldest_file))
 
-        time.sleep(get_interval())
+        time.sleep(interval)
 
 if __name__ == '__main__':
     main()
