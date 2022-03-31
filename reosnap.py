@@ -75,13 +75,13 @@ def get_file_res():
         print('Invalid resolution')
         sys.exit(1)
 
-    if args.resolution == res_levels[3] or args.resolution == 'M':
+    if args.resolution in [res_levels[3], 'M']:
         resolution = [2560, 1920]
-    elif args.resolution == res_levels[2] or args.resolution == 'h':
+    elif args.resolution in [res_levels[2], 'h']:
         resolution = [2048, 1536]
-    elif args.resolution == res_levels[1] or args.resolution == 'm':
+    elif args.resolution in [res_levels[1], 'm']:
         resolution = [1856, 1392]
-    elif args.resolution == res_levels[0] or args.resolution == 'l':
+    elif args.resolution in [res_levels[0], 'l']:
         resolution = [1600, 1200]
     elif args.width:
         resolution = [args.width,  args.width * 3 / 4]
@@ -155,16 +155,16 @@ def get_file_quality():
     args = parse_arguments()
     quality_levels = ['low', 'medium', 'high', 'max']
 
-    if args.quality == quality_levels[3] or args.quality == 'M':
+    if args.quality in [quality_levels[3], 'M']:
         return 100
 
-    if args.quality == quality_levels[2] or args.quality == 'h':
+    if args.quality in [quality_levels[2], 'h']:
         return 75
 
-    if args.quality == quality_levels[1] or args.quality == 'm':
+    if args.quality in [quality_levels[1], 'm']:
         return 50
 
-    if args.quality == quality_levels[0] or args.quality == 'l':
+    if args.quality in [quality_levels[0], 'l']:
         return 25
 
     if args.quality:
