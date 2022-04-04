@@ -268,6 +268,7 @@ def main():
 
         if not os.listdir(date_dir):
             os.rmdir(date_dir)
+            date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
 
         if i > rec_period:
             for cam_dir in os.listdir(date_dir):
