@@ -96,11 +96,14 @@ def get_file_res():
 def get_url(cam_ip, username, password):
     '''Get API url'''
 
+    if not cam_ip.startswith('http'):
+        cam_ip = f'http://{cam_ip}'
+
     url_base = 'cgi-bin/api.cgi?cmd=Snap&channel=0'
     res_param = f'width={get_file_res()[0]}&height={get_file_res()[1]}'
     now = get_timestamp()
 
-    return f'http://{cam_ip}/{url_base}&{res_param}&rs={now}&user={username}&password={password}'
+    return f'{cam_ip}/{url_base}&{res_param}&rs={now}&user={username}&password={password}'
 
 def get_output_dir():
     '''Get output directory'''
