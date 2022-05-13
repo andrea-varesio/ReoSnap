@@ -4,15 +4,30 @@
 It's a highly customizable tool that automatically saves live snapshots of Reolink security camera feeds using the Reolink APIs, and does not require an FTP server.
 
 ## Requirements
-- `pip install -r requirements.txt`
+- Install Python requirements with `pip install -r requirements.txt`
 
-- Write the Reolink camera user password in the `.env` file for each camera you want to configure.
 
-A non-admin user account is **strongly** recommended as its password will be used in plain-text.
+## Set up
+Write the Reolink camera ip, username, and password (seprated by a single comma "," and no spaces) in the `credentials.txt` file for each camera you want to configure (each camera goes in a new line):
+
+```
+192.168.0.10,username_1,password_1
+192.168.0.11,username_2,password_2
+```
+
+Due to commas (,) being used as separators, they cannot be used in any of the passwords.
+
+A **non-admin user account is strongly recommended** as its password will be used in plain-text.
 <br />
 To create a new user, open your Reolink camera web-interface, then Settings > System > User Management > Add User.
 
 NOTE: there seem to be issues with symbols in passwords. If an issue occurs, try changing to an alphanumeric-only password.
+
+Once the script is launched, if an output directory has not been specified, the path of new snapshots will be:
+
+```
+$HOME/Surveillance/yyyymmdd/cam_*/yyyymmdd_HHMMSS_cam_*_snapshot.jpg
+```
 
 ## Usage
 ```
@@ -36,25 +51,6 @@ Short | Argument | Info
 `-O PATH` | `--output PATH` | Path to output directory
 `-v` | `--verbose` | Enable verbosity
 `-l` | `--license` | Show License
-
-## Customization
-By default, the script is set up for a two-camera system. You can add/remove `get_camN_feed()`* functions to suit your needs, using the template below:
-
-```
-async def get_camN_feed():
-    '''Get camera feed'''
-
-    cam_name = 'camN'
-    cam_ip = 'http://192.168.X.Y'
-
-    save_snapshot(cam_name, cam_ip)
-```
-
-Then add `asyncio.run(get_camN_feed())`* in the `def loop()` function.
-
-Finally add a new variable in the `.env` file called `camN_password`*
-
-*(where N is the progressive number of the camera)
 
 ## Contributions
 Contributions are welcome, feel free to submit issues and/or pull requests.

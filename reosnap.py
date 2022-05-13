@@ -1,5 +1,6 @@
 #!/bin/python3
 #https://github.com/andrea-varesio/ReoSnap
+#version = 20220513.01
 
 '''Save live snapshots of Reolink cameras'''
 
@@ -13,8 +14,9 @@ import time
 
 import requests
 
-from dotenv import load_dotenv
 from PIL import Image
+
+cwd = os.path.dirname(os.path.realpath(__file__))
 
 def show_license():
     '''Show License'''
@@ -34,7 +36,6 @@ def parse_arguments():
     res_group = arg_parser.add_mutually_exclusive_group()
     time_group = arg_parser.add_mutually_exclusive_group()
 
-    arg_parser.add_argument('-u', '--username', help='default: snapshotuser', type=str)
     res_group.add_argument('-r', '--resolution', help='[low/medium/high/max]', type=str)
     res_group.add_argument('--width', help='Width', type=int)
     res_group.add_argument('--height', help='Height', type=int)
@@ -92,27 +93,14 @@ def get_file_res():
 
     return resolution
 
-def get_url_res_param():
-    '''Get url resolution parameter'''
-
-    return f'width={get_file_res()[0]}&height={get_file_res()[1]}'
-
-def get_username():
-    '''Get username'''
-
-    args = parse_arguments()
-
-    if args.username:
-        return args.get_username
-
-    return 'snapshotuser'
-
-def get_url():
+def get_url(cam_ip, username, password):
     '''Get API url'''
 
-    url_base = '/cgi-bin/api.cgi?cmd=Snap&channel=0'
+    url_base = 'cgi-bin/api.cgi?cmd=Snap&channel=0'
+    res_param = f'width={get_file_res()[0]}&height={get_file_res()[1]}'
+    now = get_timestamp()
 
-    return f'{url_base}&{get_url_res_param()}&rs={get_timestamp()}&user={get_username()}&password='
+    return f'http://{cam_ip}/{url_base}&{res_param}&rs={now}&user={username}&password={password}'
 
 def get_output_dir():
     '''Get output directory'''
@@ -134,20 +122,16 @@ def get_output_dir():
     print('Invalid output path')
     sys.exit(1)
 
-def get_variables(cam_name, cam_ip):
+def get_filepath(cam_name):
     '''Get camera variables'''
 
-    load_dotenv()
-    url = cam_ip + get_url() + os.getenv(f'{cam_name}_password')
-
     cam_dir = os.path.join(get_output_dir(), get_date(), cam_name)
+    filename = f'{get_timestamp()}_{cam_name}_snapshot.jpg'
+
     if not os.path.isdir(cam_dir):
         os.makedirs(cam_dir)
 
-    filename = f'{get_timestamp()}_{cam_name}_snapshot.jpg'
-    filepath = os.path.join(cam_dir, filename)
-
-    return filepath, url
+    return os.path.join(cam_dir, filename)
 
 def get_file_quality():
     '''Get file quality'''
@@ -172,43 +156,37 @@ def get_file_quality():
 
     return 40
 
-def save_snapshot(cam_name, cam_ip):
+async def save_snapshot(cam_no, cam_ip, username, password):
     '''Save optimized snapshot of camera feed'''
 
     args = parse_arguments()
-    filepath, url = get_variables(cam_name, cam_ip)
+    cam_name = f'cam_{cam_no}'
+    file_path = get_filepath(cam_name)
+    url = get_url(cam_ip, username, password)
 
-    with open(filepath, 'wb') as snapshot_raw:
+    with open(file_path, 'wb') as snapshot_raw:
         snapshot_raw.write(requests.get(url).content)
 
     if args.optimize:
-        with Image.open(filepath) as snapshot:
-            snapshot.save(  filepath.replace('.jpg', '_optimized.jpg'),
+        with Image.open(file_path) as snapshot:
+            snapshot.save(  file_path.replace('.jpg', '_optimized.jpg'),
                             optimize=True, quality=get_file_quality())
         if not args.keep_og:
-            os.remove(filepath)
+            os.remove(file_path)
 
-async def get_cam1_feed():
+def get_cam_feed():
     '''Get camera feed'''
 
-    cam_name = 'cam1'
-    cam_ip = 'http://192.168.X.Y'
+    cam_no = 0
 
-    save_snapshot(cam_name, cam_ip)
-
-async def get_cam2_feed():
-    '''Get camera feed'''
-
-    cam_name = 'cam2'
-    cam_ip = 'http://192.168.X.Y'
-
-    save_snapshot(cam_name, cam_ip)
-
-def loop():
-    '''Asyncronous loop over cameras'''
-
-    asyncio.run(get_cam1_feed())
-    asyncio.run(get_cam2_feed())
+    with open(os.path.join(cwd, 'credentials.txt'), 'r', encoding='utf-8') as creds:
+        for line in creds.readlines():
+            if not line.startswith('#'):
+                cam_no += 1
+                cam_ip = line.split(',')[0]
+                username = line.split(',')[1]
+                password = line.split(',')[2].rstrip()
+                asyncio.run(save_snapshot(cam_no, cam_ip, username, password))
 
 def get_interval():
     '''Get snapshots interval'''
@@ -252,7 +230,7 @@ def main():
     i = 0
 
     while True:
-        loop()
+        get_cam_feed()
 
         i += 1
 
@@ -264,17 +242,26 @@ def main():
         for cam_dir in os.listdir(date_dir):
             oldest_dir = os.listdir(os.path.join(date_dir, cam_dir))
             if not oldest_dir:
-                os.rmdir(os.path.join(date_dir, cam_dir))
+                try:
+                    os.rmdir(os.path.join(date_dir, cam_dir))
+                except FileNotFoundError:
+                    print('FileNotFoundError')
 
         if not os.listdir(date_dir):
-            os.rmdir(date_dir)
+            try:
+                os.rmdir(date_dir)
+            except FileNotFoundError:
+                print('FileNotFoundError')
             date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
 
         if i > rec_period:
             for cam_dir in os.listdir(date_dir):
                 oldest_dir = os.listdir(os.path.join(date_dir, cam_dir))
                 oldest_file = min(oldest_dir)
-                os.remove(os.path.join(date_dir, cam_dir, oldest_file))
+                try:
+                    os.remove(os.path.join(date_dir, cam_dir, oldest_file))
+                except FileNotFoundError:
+                    print(f'FileNotFoundError: {os.path.join(date_dir, cam_dir, oldest_file)}')
 
         time.sleep(interval)
 
