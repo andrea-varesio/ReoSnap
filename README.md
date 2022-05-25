@@ -6,7 +6,6 @@ It's a highly customizable tool that automatically saves live snapshots of Reoli
 ## Requirements
 - Install Python requirements with `pip install -r requirements.txt`
 
-
 ## Set up
 Write the Reolink camera ip, username, and password (seprated by a single comma "," and no spaces) in the `credentials.txt` file for each camera you want to configure (each camera goes in a new line):
 
@@ -17,7 +16,7 @@ Write the Reolink camera ip, username, and password (seprated by a single comma 
 
 Due to commas (,) being used as separators, they cannot be used in any of the passwords.
 
-A **non-admin user account is strongly recommended** as its password will be used in plain-text.
+A **non-admin user account is strongly recommended** as its password will be used in plain-text (over the local network).
 <br />
 To create a new user, open your Reolink camera web-interface, then Settings > System > User Management > Add User.
 

@@ -1,6 +1,6 @@
 #!/bin/python3
 #https://github.com/andrea-varesio/ReoSnap
-#version = 20220513.01
+#version = 20220525.01
 
 '''Save live snapshots of Reolink cameras'''
 
@@ -52,19 +52,23 @@ def parse_arguments():
 
     return arg_parser.parse_args()
 
+def verbose(text):
+    '''Print text if verbosity is enabled'''
+
+    args = parse_arguments()
+
+    if args.verbose:
+        print(text)
+
 def get_date():
     '''Get current date'''
 
-    now = datetime.datetime.now()
-
-    return now.strftime('%Y%m%d')
+    return datetime.datetime.now().strftime('%Y%m%d')
 
 def get_timestamp():
     '''Get current timestamp'''
 
-    now = datetime.datetime.now()
-
-    return now.strftime('%Y%m%d_%H%M%S')
+    return datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
 
 def get_file_res():
     '''Get snapshot resolution'''
@@ -237,8 +241,7 @@ def main():
 
         i += 1
 
-        if args.verbose:
-            print(f'Saved snapshot(s): {get_timestamp()} | #{i}')
+        verbose(f'Saved snapshot(s): {get_timestamp()} | #{i}')
 
         date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
 
@@ -250,12 +253,13 @@ def main():
                 except FileNotFoundError:
                     print('FileNotFoundError')
 
-        if not os.listdir(date_dir):
+        if len(os.listdir(date_dir)) == 0:
             try:
                 os.rmdir(date_dir)
             except FileNotFoundError:
                 print('FileNotFoundError')
-            date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
+            finally:
+                date_dir = os.path.join(output_dir, min(os.listdir(output_dir)))
 
         if i > rec_period:
             for cam_dir in os.listdir(date_dir):
