@@ -14,7 +14,11 @@ import time
 
 import requests
 
-from PIL import Image
+try:
+    from PIL import Image
+    NO_PIL = False
+except ModuleNotFoundError:
+    NO_PIL = True
 
 cwd = os.path.dirname(os.path.realpath(__file__))
 
@@ -230,6 +234,11 @@ def run_checks():
     if args.license:
         show_license()
         sys.exit(0)
+
+    if args.optimize and NO_PIL:
+        print('Enabled image optimization but missing required package: "Pillow"')
+        print('Install required package ("pip install Pillow") or disable image optimization')
+        sys.exit(1)
 
 def main():
     '''Main function'''
