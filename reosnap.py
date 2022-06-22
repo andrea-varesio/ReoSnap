@@ -1,6 +1,6 @@
 #!/bin/python3
 #https://github.com/andrea-varesio/ReoSnap
-#version = 20220525.01
+#version = 20220622.05
 
 '''Save live snapshots of Reolink cameras'''
 
