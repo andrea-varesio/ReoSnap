@@ -37,16 +37,16 @@ Short | Argument | Info
 ---|---|---
 `-h` | `--help` | show this help message and exit
 `-u USER` | `--username USER` | Camera username (default: snapshotuser)
-`-r RES` | `--resolution RES` | [low/medium/high/max]
-/ | `--width W` | Width (height will be calculated)
-/ | `--height H` | Height (width will be calculated)
-`-o` | `--optimize` | Optimize image
-`-q QUAL` | `--quality QUAL` | Optimization quality [low/medium/high/max/0-100]
+`-r RES` | `--resolution RES` | [low/medium/high/max] (default: medium)
+/ | `--width W` | Width (height will be calculated) (default: 1856)
+/ | `--height H` | Height (width will be calculated) (default: 1392)
+`-o` | `--optimize` | Enable image optimization (default: disabled)
+`-q QUAL` | `--quality QUAL` | Optimization quality [low/medium/high/max/0-100] (default: 40)
 `-k` | `--keep-og` | Keep original files (if optimization is enabled)
-`-H H` | `--hours H` | Delete snapshots older than H hours
+`-H H` | `--hours H` | Delete snapshots older than H hours (default: 12)
 `-m M` | `--minutes M` | Delete snapshots older than M minutes
 `-s S` | `--seconds S` | Delete snapshots older than S seconds
-`-i INT` | `--interval INT` | Snapshot interval in seconds (default=5)
+`-i INT` | `--interval INT` | Snapshot interval in seconds (default: 4)
 `-O PATH` | `--output PATH` | Path to output directory
 `-v` | `--verbose` | Enable verbosity
 `-l` | `--license` | Show License
