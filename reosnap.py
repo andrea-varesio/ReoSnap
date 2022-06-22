@@ -32,25 +32,26 @@ def show_license():
 def parse_arguments():
     '''Parse arguments'''
 
-    arg_parser = argparse.ArgumentParser(description = 'Description')
-    res_group = arg_parser.add_mutually_exclusive_group()
-    time_group = arg_parser.add_mutually_exclusive_group()
+    arg = argparse.ArgumentParser(description = 'Description')
+    res_group = arg.add_mutually_exclusive_group()
+    time_group = arg.add_mutually_exclusive_group()
 
     res_group.add_argument('-r', '--resolution', help='[low/medium/high/max]', type=str)
     res_group.add_argument('--width', help='Width', type=int)
     res_group.add_argument('--height', help='Height', type=int)
-    arg_parser.add_argument('-o', '--optimize', help='Optimize image', action='store_true')
-    arg_parser.add_argument('-q', '--quality', help='[low/medium/high/max/0-100]', type=str)
-    arg_parser.add_argument('-k', '--keep-og', help='Keep original files', action='store_true')
+    arg.add_argument('-o', '--optimize', help='Optimize image', action='store_true')
+    arg.add_argument('-q', '--quality', help='[low/medium/high/max/0-100]', type=str)
+    arg.add_argument('-k', '--keep-og', help='Keep original files', action='store_true')
     time_group.add_argument('-H', '--hours', help='Hours', type=int)
     time_group.add_argument('-m', '--minutes', help='Minutes', type=int)
     time_group.add_argument('-s', '--seconds', help='Seconds', type=int)
-    arg_parser.add_argument('-i', '--interval', help='Snapshot interval (default=4s)', type=int)
-    arg_parser.add_argument('-O', '--output', help='Path to output directory', type=str)
-    arg_parser.add_argument('-v', '--verbose', help='Enable verbosity', action='store_true')
-    arg_parser.add_argument('-l', '--license', help='Show License', action='store_true')
+    arg.add_argument('-i', '--interval', help='Snapshot interval (default: 4s)', type=int)
+    arg.add_argument('-O', '--output', help='Path to output directory', type=str)
+    arg.add_argument('-t', '--tmux', help='Run in tmux detached session', action='store_true')
+    arg.add_argument('-v', '--verbose', help='Enable verbosity', action='store_true')
+    arg.add_argument('-l', '--license', help='Show License', action='store_true')
 
-    return arg_parser.parse_args()
+    return arg.parse_args()
 
 def verbose(text):
     '''Print text if verbosity is enabled'''
@@ -221,18 +222,23 @@ def get_rec_period():
 
     return 12 * 3600 / get_interval()
 
-def main():
-    '''Main function'''
+def run_checks():
+    '''Run required checks'''
 
     args = parse_arguments()
-
-    interval = get_interval()
-    rec_period = get_rec_period()
-    output_dir = get_output_dir()
 
     if args.license:
         show_license()
         sys.exit(0)
+
+def main():
+    '''Main function'''
+
+    run_checks()
+
+    interval = get_interval()
+    rec_period = get_rec_period()
+    output_dir = get_output_dir()
 
     i = 0
 
