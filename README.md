@@ -48,6 +48,7 @@ Short | Argument | Info
 `-s S` | `--seconds S` | Delete snapshots older than S seconds
 `-i INT` | `--interval INT` | Snapshot interval in seconds (default: 4)
 `-O PATH` | `--output PATH` | Path to output directory
+`-t` | `--tmux` | Run in tmux detached session
 `-v` | `--verbose` | Enable verbosity
 `-l` | `--license` | Show License
 

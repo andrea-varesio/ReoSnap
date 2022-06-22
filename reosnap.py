@@ -12,6 +12,8 @@ import pathlib
 import sys
 import time
 
+from shutil import which
+
 import requests
 
 try:
@@ -237,8 +239,32 @@ def run_checks():
 
     if args.optimize and NO_PIL:
         print('Enabled image optimization but missing required package: "Pillow"')
-        print('Install required package ("pip install Pillow") or disable image optimization')
+        print('Install required package ("pip install Pillow"), or disable image optimization')
         sys.exit(1)
+
+    if args.tmux:
+        if which('tmux') is None:
+            print('Requested tmux session but missing required package: "tmux"')
+            print('Install required package "tmux", or remove [-t, --tmux] argument')
+            sys.exit(1)
+
+        argv = sys.argv
+        argv.pop(0)
+
+        while '--tmux' in argv:
+            argv.remove('--tmux')
+
+        while '-t' in argv:
+            argv.remove('-t')
+
+        cmd = f'{os.path.realpath(__file__)} {" ".join(argv)}'
+
+        os.system(f'tmux new-session -d "python3 {cmd}"')
+
+        print('Launched script in new tmux session')
+        print('Type "tmux attach" to view progress')
+
+        sys.exit(0)
 
 def main():
     '''Main function'''
