@@ -63,7 +63,7 @@ GNU GENERAL PUBLIC LICENSE
 Version 3, 29 June 2007
 
 "ReoSnap" - Save live snapshots of Reolink camera feeds.<br />
-Copyright (C) 2022 Andrea Varesio <https://www.andreavaresio.com/>.
+Copyright (C) 2023 Andrea Varesio <https://www.andreavaresio.com/>.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
