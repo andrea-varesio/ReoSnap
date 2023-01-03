@@ -1,6 +1,6 @@
 #!/bin/python3
 #https://github.com/andrea-varesio/ReoSnap
-#version = 20230103.01
+#version = 20230103.02
 
 '''Save live snapshots of Reolink cameras'''
 
@@ -29,7 +29,7 @@ def show_license():
 
     print('\n**************************************************')
     print('"ReoSnap": Save live snapshots of Reolink camera feeds')
-    print('Copyright (C) 2023 Andrea Varesio (https://www.andreavaresio.com/).')
+    print('Copyright (C) 2022-2023 Andrea Varesio (https://www.andreavaresio.com/).')
     print('This program comes with ABSOLUTELY NO WARRANTY')
     print('This is free software, and you are welcome to redistribute it under certain conditions')
     print('Full license available at https://github.com/andrea-varesio/ReoSnap')
