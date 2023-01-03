@@ -1,6 +1,6 @@
 #!/bin/python3
 #https://github.com/andrea-varesio/ReoSnap
-#version = 20230102.01
+#version = 20230103.01
 
 '''Save live snapshots of Reolink cameras'''
 
@@ -38,7 +38,7 @@ def show_license():
 def parse_arguments():
     '''Parse arguments'''
 
-    arg = argparse.ArgumentParser(description = 'Description')
+    arg = argparse.ArgumentParser()
     res_group = arg.add_mutually_exclusive_group()
     time_group = arg.add_mutually_exclusive_group()
 
